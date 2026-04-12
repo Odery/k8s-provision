@@ -1,0 +1,25 @@
+---
+- name: Install Containerd
+  ansible.builtin.apt:
+    package: containerd
+    state: present
+  register: install_result
+
+- name: Generate default Containerd config
+  ansible.builtin.shell:
+    cmd: "containerd config default > /etc/containerd/config.toml"
+  when: install_result.changed
+  notify: Enable containerd
+
+- name: Fix containerd cgroup and correct k8s cni plugin bin path
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - { regexp: "SystemdCgroup = false", replace: "SystemdCgroup = true" }
+    - {
+        regexp: 'bin_dir = "/usr/lib/cni"',
+        replace: 'bin_dir = "/opt/cni/bin"',
+      }
+  notify: Restart containerd
