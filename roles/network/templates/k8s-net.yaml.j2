@@ -1,0 +1,7 @@
+network:
+  version: 2
+  ethernets:
+    {{ k8s_interfcae }}
+    dhcp4: false
+    addresses:
+      - {{ k8s_net_ip }}/24

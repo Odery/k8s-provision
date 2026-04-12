@@ -1,0 +1,9 @@
+---
+- name: Drop in netplan config for the k8s interface
+  ansible.builtin.template:
+    src: k8s_net.yaml.j2
+    dest: /etc/netplan/k8s_net.yaml
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Reapply netplan
