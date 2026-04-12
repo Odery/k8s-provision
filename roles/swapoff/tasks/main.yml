@@ -5,6 +5,6 @@
   changed_when: false
 
 - name: Dismount swap
-  ansible.builtin.mount:
+  ansible.posix.mount:
     path: "{{ swap_file_path }}"
     state: absent
