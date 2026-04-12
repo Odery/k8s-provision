@@ -1,0 +1,2 @@
+---
+primary_master: "{{ groups['control_plane'][0] }}"
