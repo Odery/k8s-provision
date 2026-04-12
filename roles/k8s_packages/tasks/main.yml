@@ -47,3 +47,10 @@
     - kubelet
     - kubeadm
     - kubectl
+
+# Critical for multi net adapter setups!!!
+- name: Set kubelet node IP
+  ansible.builtin.lineinfile:
+    path: /etc/default/kubelet
+    line: "KUBELET_EXTRA_ARGS=--node_ip={{ k8s_net_ip }}"
+    create: true
