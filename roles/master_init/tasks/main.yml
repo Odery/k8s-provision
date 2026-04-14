@@ -35,16 +35,33 @@
 - name: Install Tigera operator for managing Calico
   ansible.builtin.command:
     cmd: "kubectl apply -f {{ tigera_operator_manifest_url }}"
-  register: tigera_result
-  changed_when: "'created' in tigera_result.stdout or 'configured' in tigera_result.stdout"
+  register: master_init_tigera_result
+  changed_when: "'created' in master_init_tigera_result.stdout or 'configured' in master_init_tigera_result.stdout"
+  become: false
+
+- name: Wait for the Tigera operator to be ready
+  ansible.builtin.command:
+    cmd: "kubectl get crd installations.operator.tigera.io"
+  become: false
+  changed_when: false
+  register: master_init_crd_check
+  until: master_init_crd_check.rc == 0
+  retries: 20
+  delay: 10
 
 - name: Install Calico CNI
   ansible.builtin.command:
     cmd: "kubectl apply -f /tmp/calico-custom-resources.yaml"
-  register: calico_result
-  changed_when: "'created' in calico_result.stdout or 'configured' in calico_result.stdout"
+  register: master_init_calico_result
+  changed_when: "'created' in master_init_calico_result.stdout or 'configured' in master_init_calico_result.stdout"
+  become: false
 
 - name: Wait for Calico to be ready
   ansible.builtin.command:
-    cmd: "kubectl wait --for=condition=Ready pods --all -n calico-system --timeout=600s"
+    cmd: "kubectl wait --for=condition=Ready pods --all -n calico-system --timeout=60s"
   changed_when: false
+  become: false
+  register: master_init_calico_wait
+  until: master_init_calico_wait.rc == 0
+  retries: 20
+  delay: 15
