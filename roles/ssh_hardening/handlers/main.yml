@@ -2,4 +2,4 @@
 - name: Restart sshd
   ansible.builtin.systemd:
     name: ssh.socket
-    state: reloaded
+    state: restarted
