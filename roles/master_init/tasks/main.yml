@@ -17,19 +17,19 @@
 
 - name: Create kube user dir
   ansible.builtin.file:
-    path: "/home/{{ remote_user }}/.kube"
+    path: "/home/{{ ansible_user }}/.kube"
     state: directory
-    owner: "{{ remote_user }}"
-    group: "{{ remote_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: "0755"
 
 - name: Confgure kubectl access for the user
   ansible.builtin.copy:
     remote_src: true
     src: /etc/kubernetes/admin.conf
-    dest: "/home/{{ remote_user }}/.kube/config"
-    owner: "{{ remote_user }}"
-    group: "{{ remote_user }}"
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: "0644"
 
 - name: Install Tigera operator for managing Calico

@@ -23,8 +23,8 @@
   ansible.builtin.template:
     src: kubeadm-join-config.yaml.j2
     dest: /tmp/k8s-join-config.yaml
-    owner: "{{ remote_user }}"
-    group: "{{ remote_user }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: "0644"
 
 - name: Join control plane

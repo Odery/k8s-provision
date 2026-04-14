@@ -3,13 +3,19 @@
   ansible.builtin.apt:
     package: containerd
     state: present
-  register: install_result
+
+- name: Create config dir
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    owner: root
+    group: root
+    mode: "0744"
 
 - name: Generate default Containerd config
   ansible.builtin.shell:
     cmd: "containerd config default > /etc/containerd/config.toml"
-  when: install_result.changed
-  notify: Enable containerd
+  changed_when: false
 
 - name: Fix containerd cgroup and correct k8s cni plugin bin path
   ansible.builtin.replace:
@@ -17,9 +23,8 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   loop:
-    - { regexp: "SystemdCgroup = false", replace: "SystemdCgroup = true" }
-    - {
-        regexp: 'bin_dir = "/usr/lib/cni"',
-        replace: 'bin_dir = "/opt/cni/bin"',
-      }
+    - regexp: "SystemdCgroup = false"
+      replace: "SystemdCgroup = true"
+    - regexp: 'bin_dir = "/usr/lib/cni"'
+      replace: 'bin_dir = "/opt/cni/bin"'
   notify: Restart containerd
