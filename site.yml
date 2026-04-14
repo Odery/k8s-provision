@@ -19,6 +19,7 @@
 - name: Join remaining control plane nodes
   hosts: control_plane[1:]
   become: true
+  serial: 1
   roles:
     - control_plane_join
 
